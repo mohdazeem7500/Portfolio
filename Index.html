@@ -1,0 +1,191 @@
+export default function Portfolio() {
+  const projects = [
+    {
+      title: 'Sales Dashboard Analysis',
+      tools: 'Excel, Power BI',
+      description:
+        'Analyzed monthly and yearly sales trends and created interactive dashboards for business insights.',
+    },
+    {
+      title: 'E-commerce Data Analysis',
+      tools: 'SQL, Python',
+      description:
+        'Worked on customer, product, and sales datasets to identify trends and improve decision making.',
+    },
+    {
+      title: 'Blinkit/Zepto Sales Analysis',
+      tools: 'Power BI, Excel',
+      description:
+        'Created KPI dashboards for revenue, profit, and product performance tracking.',
+    },
+    {
+      title: 'HR Analytics Dashboard',
+      tools: 'Power BI',
+      description:
+        'Analyzed employee attrition and performance metrics using visual dashboards.',
+    },
+  ];
+
+  const skills = [
+    'Excel',
+    'SQL',
+    'Power BI',
+    'Python',
+    'Data Cleaning',
+    'Dashboard Creation',
+    'Data Visualization',
+    'Business Analysis',
+  ];
+
+  return (
+    <div className="min-h-screen bg-black text-white font-sans">
+      {/* Hero Section */}
+      <section className="px-6 md:px-20 py-20 border-b border-gray-800">
+        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10 items-center">
+          <div>
+            <p className="text-gray-400 text-lg mb-3">Aspiring Data Analyst</p>
+            <h1 className="text-5xl md:text-7xl font-bold leading-tight">
+              Mohd <span className="text-blue-500">Shariq</span>
+            </h1>
+            <p className="mt-6 text-gray-300 text-lg leading-relaxed">
+              BBA graduate with strong interest in data analytics and business insights. Skilled in Excel, SQL, Power BI, and Python with hands-on project experience.
+            </p>
+
+            <div className="flex gap-4 mt-8 flex-wrap">
+              <button className="bg-blue-600 hover:bg-blue-700 transition px-6 py-3 rounded-2xl font-medium shadow-lg">
+                Download Resume
+              </button>
+              <button className="border border-gray-600 hover:border-blue-500 px-6 py-3 rounded-2xl transition">
+                Contact Me
+              </button>
+            </div>
+          </div>
+
+          <div className="flex justify-center">
+            <div className="w-80 h-80 rounded-3xl bg-gradient-to-br from-blue-500 to-gray-900 shadow-2xl flex items-center justify-center text-6xl font-bold">
+              MS
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* About */}
+      <section className="px-6 md:px-20 py-16">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-4xl font-bold mb-8">About Me</h2>
+          <div className="bg-gray-900 p-8 rounded-3xl shadow-xl border border-gray-800">
+            <p className="text-gray-300 text-lg leading-8">
+              I completed my graduation in BBA from Shri Siddhi Vinayak Groups of Institution, Dohna. After graduation, I completed a Data Analyst course from Dizital Mantras where I learned Excel, SQL, Power BI, and Python.
+            </p>
+            <p className="text-gray-300 text-lg leading-8 mt-5">
+              I enjoy working with data, creating dashboards, and finding meaningful insights that help businesses make better decisions.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Skills */}
+      <section className="px-6 md:px-20 py-16 bg-gray-950">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-4xl font-bold mb-10">Skills</h2>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+            {skills.map((skill, index) => (
+              <div
+                key={index}
+                className="bg-gray-900 border border-gray-800 rounded-2xl p-5 text-center hover:border-blue-500 transition"
+              >
+                <p className="font-medium text-lg">{skill}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Stats */}
+      <section className="px-6 md:px-20 py-16">
+        <div className="max-w-5xl mx-auto grid md:grid-cols-3 gap-6">
+          <div className="bg-gray-900 rounded-3xl p-8 border border-gray-800 text-center">
+            <h3 className="text-5xl font-bold text-blue-500">4+</h3>
+            <p className="mt-3 text-gray-300">Projects Completed</p>
+          </div>
+
+          <div className="bg-gray-900 rounded-3xl p-8 border border-gray-800 text-center">
+            <h3 className="text-5xl font-bold text-blue-500">8+</h3>
+            <p className="mt-3 text-gray-300">Skills Learned</p>
+          </div>
+
+          <div className="bg-gray-900 rounded-3xl p-8 border border-gray-800 text-center">
+            <h3 className="text-5xl font-bold text-blue-500">1</h3>
+            <p className="mt-3 text-gray-300">Certification</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Projects */}
+      <section className="px-6 md:px-20 py-16 bg-gray-950">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-4xl font-bold mb-10">Projects</h2>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            {projects.map((project, index) => (
+              <div
+                key={index}
+                className="bg-gray-900 border border-gray-800 rounded-3xl p-8 hover:border-blue-500 transition shadow-xl"
+              >
+                <h3 className="text-2xl font-semibold mb-3">{project.title}</h3>
+                <p className="text-blue-400 mb-4">{project.tools}</p>
+                <p className="text-gray-300 leading-7">{project.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Education */}
+      <section className="px-6 md:px-20 py-16">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-4xl font-bold mb-10">Education</h2>
+
+          <div className="space-y-6">
+            <div className="bg-gray-900 p-8 rounded-3xl border border-gray-800">
+              <h3 className="text-2xl font-semibold">BBA - Management</h3>
+              <p className="text-gray-400 mt-2">
+                Shri Siddhi Vinayak Groups of Institution, Dohna
+              </p>
+            </div>
+
+            <div className="bg-gray-900 p-8 rounded-3xl border border-gray-800">
+              <h3 className="text-2xl font-semibold">Data Analyst Course</h3>
+              <p className="text-gray-400 mt-2">Dizital Mantras</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact */}
+      <section className="px-6 md:px-20 py-20 bg-gray-950">
+        <div className="max-w-5xl mx-auto text-center">
+          <h2 className="text-4xl font-bold mb-8">Contact Me</h2>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="bg-gray-900 p-6 rounded-3xl border border-gray-800">
+              <h3 className="text-xl font-semibold mb-2">Location</h3>
+              <p className="text-gray-400">Richha, Bareilly, Uttar Pradesh</p>
+            </div>
+
+            <div className="bg-gray-900 p-6 rounded-3xl border border-gray-800">
+              <h3 className="text-xl font-semibold mb-2">Email</h3>
+              <p className="text-gray-400">yourmail@example.com</p>
+            </div>
+
+            <div className="bg-gray-900 p-6 rounded-3xl border border-gray-800">
+              <h3 className="text-xl font-semibold mb-2">Phone</h3>
+              <p className="text-gray-400">+91 XXXXX XXXXX</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}

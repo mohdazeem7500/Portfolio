@@ -1,1 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mohd Azeem — Resume</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+  :root {
+    --navy: #0f1f3d;
+    --gold: #b8873a;
+    --gold-light: #d4a85a;
+    --cream: #faf8f4;
+    --text: #2c2c2c;
+    --muted: #6b6b6b;
+    --line: #e0d8cc;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #e8e4dd;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 20px 60px;
+  }
+
+  /* Download Button */
+  .download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--navy);
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 14px 32px;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 28px;
+    transition: background 0.2s, transform 0.15s;
+    box-shadow: 0 4px 20px rgba(15,31,61,0.18);
+  }
+  .download-btn:hover { background: var(--gold); transform: translateY(-2px); }
+  .download-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+  /* Resume Card */
+  #resume {
+    width: 794px;
+    background: var(--cream);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Header */
+  .resume-header {
+    background: var(--navy);
+    padding: 40px 52px 36px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 36px;
+  }
+  .resume-header::before {
+    content: '';
+    position: absolute;
+    right: -40px; top: -40px;
+    width: 220px; height: 220px;
+    border-radius: 50%;
+    border: 2px solid rgba(184,135,58,0.25);
+    pointer-events: none;
+  }
+  .resume-header::after {
+    content: '';
+    position: absolute;
+    right: -10px; top: -10px;
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    border: 2px solid rgba(184,135,58,0.15);
+    pointer-events: none;
+  }
+  .profile-img-wrap {
+    flex-shrink: 0;
+    width: 110px; height: 110px;
+    border-radius: 50%;
+    border: 3px solid var(--gold);
+    overflow: hidden;
+    box-shadow: 0 0 0 4px rgba(184,135,58,0.2);
+    z-index: 1;
+  }
+  .profile-img-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .header-text { flex: 1; z-index: 1; }
+  .header-accent {
+    width: 48px; height: 3px;
+    background: var(--gold);
+    margin-bottom: 14px;
+  }
+  .resume-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 38px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.01em;
+    line-height: 1.1;
+    margin-bottom: 6px;
+  }
+  .resume-header .tagline {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--gold-light);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 22px;
+  }
+  .contact-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px 20px;
+  }
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: rgba(255,255,255,0.75);
+    font-size: 12.5px;
+  }
+  .contact-item svg { width: 13px; height: 13px; flex-shrink: 0; opacity: 0.8; }
+  .contact-item span { color: rgba(255,255,255,0.85); }
+
+  /* Body */
+  .resume-body {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+  }
+
+  /* Main Column */
+  .main-col {
+    padding: 44px 44px 44px 52px;
+    border-right: 1px solid var(--line);
+  }
+
+  /* Sidebar */
+  .side-col {
+    padding: 44px 36px;
+    background: #f4f0ea;
+  }
+
+  /* Section */
+  .section { margin-bottom: 36px; }
+  .section:last-child { margin-bottom: 0; }
+
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .section-label span {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--navy);
+    letter-spacing: 0.01em;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--gold), transparent);
+  }
+
+  /* Education Entry */
+  .edu-entry {
+    margin-bottom: 22px;
+    padding-left: 16px;
+    border-left: 2px solid var(--gold);
+  }
+  .edu-entry:last-child { margin-bottom: 0; }
+  .edu-degree {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 3px;
+  }
+  .edu-institution {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .edu-meta {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+  .edu-score {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .edu-score strong {
+    color: var(--gold);
+    font-weight: 600;
+  }
+
+  /* Objective */
+  .objective-text {
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: #444;
+    font-weight: 300;
+  }
+
+  /* Skills */
+  .skill-tag {
+    display: inline-block;
+    background: var(--navy);
+    color: rgba(255,255,255,0.9);
+    font-size: 12px;
+    padding: 5px 13px;
+    margin: 0 6px 8px 0;
+    font-weight: 400;
+    letter-spacing: 0.03em;
+  }
+
+  /* Sidebar sections */
+  .side-section { margin-bottom: 30px; }
+  .side-section:last-child { margin-bottom: 0; }
+  .side-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  /* Score bar */
+  .score-item { margin-bottom: 12px; }
+  .score-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    font-size: 12.5px;
+    color: var(--text);
+  }
+  .score-label span:last-child { color: var(--gold); font-weight: 600; }
+  .score-bar { height: 4px; background: #ddd; border-radius: 2px; overflow: hidden; }
+  .score-fill { height: 100%; background: linear-gradient(to right, var(--navy), var(--gold)); border-radius: 2px; }
+
+  /* Info item */
+  .info-item {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+  }
+  .info-label {
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 2px;
+  }
+  .info-value {
+    font-size: 13px;
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  /* Gold divider */
+  .gold-line {
+    width: 32px; height: 2px;
+    background: var(--gold);
+    margin: 0 0 16px 0;
+  }
+
+  /* Achievement item */
+  .achieve-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    color: #444;
+    line-height: 1.55;
+  }
+  .achieve-item::before {
+    content: '◆';
+    color: var(--gold);
+    font-size: 8px;
+    margin-top: 4px;
+    flex-shrink: 0;
+  }
+
+  /* Footer strip */
+  .resume-footer {
+    background: var(--navy);
+    height: 6px;
+  }
+
+  @media print {
+    body { background: none; padding: 0; }
+    .download-btn { display: none; }
+    #resume { box-shadow: none; width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<button class="download-btn" onclick="downloadPDF()">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+    <polyline points="7 10 12 15 17 10"/>
+    <line x1="12" y1="15" x2="12" y2="3"/>
+  </svg>
+  Download PDF
+</button>
+
+<div id="resume">
+
+  <!-- HEADER -->
+  <div class="resume-header">
+    <div class="profile-img-wrap">
+      <img src="https://mohdazeem7500.github.io/Portfolio/image/profile.jpeg" alt="Mohd Azeem" crossorigin="anonymous">
+    </div>
+    <div class="header-text">
+      <div class="header-accent"></div>
+      <h1>Mohd Azeem</h1>
+      <div class="tagline">Data Analyst &nbsp;·&nbsp; B.Com (H) Graduate</div>
+      <div class="contact-row">
+        <div class="contact-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.13 1.18 2 2 0 012.11 0h3a2 2 0 012 1.72c.13.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0122 14.92z"/></svg>
+          <span>7500623340</span>
+        </div>
+        <div class="contact-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <span>azeemda746@gmail.com</span>
+        </div>
+        <div class="contact-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>Mohalla Islamnagar Richha, Bareilly — 243201</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div class="resume-body">
+
+    <!-- MAIN COLUMN -->
+    <div class="main-col">
+
+      <!-- Objective -->
+      <div class="section">
+        <div class="section-label"><span>Career Objective</span></div>
+        <p class="objective-text">
+          A motivated B.Com (Honours) graduate and certified Data Analyst seeking an opportunity to leverage analytical, data-driven, and financial skills in a dynamic professional environment. Trained in data analysis tools and techniques at Dizital Mantras, Bareilly. Committed to delivering actionable insights through data, continuous learning, and effective communication.
+        </p>
+      </div>
+
+      <!-- Education -->
+      <div class="section">
+        <div class="section-label"><span>Education &amp; Certification</span></div>
+
+        <div class="edu-entry">
+          <div class="edu-degree">Data Analyst Certification</div>
+          <div class="edu-institution">Dizital Mantras, Bareilly</div>
+          <div class="edu-meta">
+            <div class="edu-score">Professional Certificate &nbsp;|&nbsp; <strong>Data Analytics</strong></div>
+          </div>
+        </div>
+
+        <div class="edu-entry">
+          <div class="edu-degree">Bachelor of Commerce (Honours)</div>
+          <div class="edu-institution">Rajshree Institute of Management &amp; Technology, Bareilly</div>
+          <div class="edu-meta">
+            <div class="edu-score">Graduation &nbsp;|&nbsp; <strong>B.COM (H) — Completed</strong></div>
+          </div>
+        </div>
+
+        <div class="edu-entry">
+          <div class="edu-degree">Senior Secondary (12th)</div>
+          <div class="edu-institution">Uttar Pradesh Board</div>
+          <div class="edu-meta">
+            <div class="edu-score">Percentage: <strong>75.4%</strong></div>
+          </div>
+        </div>
+
+        <div class="edu-entry">
+          <div class="edu-degree">Secondary (10th)</div>
+          <div class="edu-institution">Uttar Pradesh Board</div>
+          <div class="edu-meta">
+            <div class="edu-score">Percentage: <strong>59.6%</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Highlights -->
+      <div class="section">
+        <div class="section-label"><span>Key Highlights</span></div>
+        <div class="achieve-item">Certified Data Analyst from Dizital Mantras, Bareilly — trained in Python, SQL, Power BI &amp; Excel</div>
+        <div class="achieve-item">Completed B.Com (Honours) graduation from a recognized management institution</div>
+        <div class="achieve-item">Secured 75.4% in 12th standard demonstrating strong academic performance</div>
+        <div class="achieve-item">Hands-on experience in data cleaning, data visualization &amp; statistical analysis</div>
+        <div class="achieve-item">Effective communicator with strong analytical thinking and team collaboration skills</div>
+      </div>
+
+      <!-- Skills -->
+      <div class="section">
+        <div class="section-label"><span>Technical Skills</span></div>
+        <div>
+          <span class="skill-tag">Python</span>
+          <span class="skill-tag">SQL</span>
+          <span class="skill-tag">Power BI</span>
+          <span class="skill-tag">MS Excel</span>
+          <span class="skill-tag">Data Visualization</span>
+          <span class="skill-tag">Data Cleaning</span>
+          <span class="skill-tag">Statistical Analysis</span>
+          <span class="skill-tag">MS Office</span>
+          <span class="skill-tag">Financial Analysis</span>
+          <span class="skill-tag">Problem Solving</span>
+          <span class="skill-tag">Communication</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SIDE COLUMN -->
+    <div class="side-col">
+
+      <!-- Personal Info -->
+      <div class="side-section">
+        <div class="side-title">Personal Details</div>
+        <div class="info-item">
+          <span class="info-label">Full Name</span>
+          <span class="info-value">Mohd Azeem</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Phone</span>
+          <span class="info-value">7500623340</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Email</span>
+          <span class="info-value" style="font-size:12px">azeemda746@gmail.com</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Address</span>
+          <span class="info-value" style="font-size:12px">Mohalla Islamnagar Richha,<br>Bareilly, UP — 243201</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Availability</span>
+          <span class="info-value" style="color:var(--gold)">Immediate</span>
+        </div>
+      </div>
+
+      <!-- Academic Performance -->
+      <div class="side-section">
+        <div class="side-title">Academic Performance</div>
+        <div class="score-item">
+          <div class="score-label"><span>12th Standard</span><span>75.4%</span></div>
+          <div class="score-bar"><div class="score-fill" style="width:75.4%"></div></div>
+        </div>
+        <div class="score-item">
+          <div class="score-label"><span>10th Standard</span><span>59.6%</span></div>
+          <div class="score-bar"><div class="score-fill" style="width:59.6%"></div></div>
+        </div>
+      </div>
+
+      <!-- Core Competencies -->
+      <div class="side-section">
+        <div class="side-title">Core Competencies</div>
+        <div class="score-item">
+          <div class="score-label"><span>Data Analysis</span><span>85%</span></div>
+          <div class="score-bar"><div class="score-fill" style="width:85%"></div></div>
+        </div>
+        <div class="score-item">
+          <div class="score-label"><span>Power BI / Excel</span><span>80%</span></div>
+          <div class="score-bar"><div class="score-fill" style="width:80%"></div></div>
+        </div>
+        <div class="score-item">
+          <div class="score-label"><span>Python / SQL</span><span>78%</span></div>
+          <div class="score-bar"><div class="score-fill" style="width:78%"></div></div>
+        </div>
+        <div class="score-item">
+          <div class="score-label"><span>Financial Analysis</span><span>72%</span></div>
+          <div class="score-bar"><div class="score-fill" style="width:72%"></div></div>
+        </div>
+      </div>
+
+      <!-- Languages -->
+      <div class="side-section">
+        <div class="side-title">Languages</div>
+        <div class="score-item">
+          <div class="score-label"><span>Hindi</span><span>Native</span></div>
+          <div class="score-bar"><div class="score-fill" style="width:100%"></div></div>
+        </div>
+        <div class="score-item">
+          <div class="score-label"><span>Urdu</span><span>Fluent</span></div>
+          <div class="score-bar"><div class="score-fill" style="width:85%"></div></div>
+        </div>
+        <div class="score-item">
+          <div class="score-label"><span>English</span><span>Proficient</span></div>
+          <div class="score-bar"><div class="score-fill" style="width:70%"></div></div>
+        </div>
+      </div>
+
+      <!-- Interests -->
+      <div class="side-section">
+        <div class="side-title">Interests</div>
+        <div class="gold-line"></div>
+        <div style="font-size:13px; color:#555; line-height:1.9;">
+          Data Analytics &amp; BI<br>
+          Finance &amp; Investments<br>
+          Business Intelligence<br>
+          Digital Literacy<br>
+          Market Research
+        </div>
+      </div>
+
+      <!-- Declaration -->
+      <div class="side-section">
+        <div class="side-title">Declaration</div>
+        <div style="font-size:12px; color:#666; line-height:1.65; font-style:italic;">
+          I hereby declare that all information provided is true and correct to the best of my knowledge.
+        </div>
+        <div style="margin-top:24px; border-top:1px solid var(--line); padding-top:10px; font-size:12px; color:#888;">
+          Mohd Azeem
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="resume-footer"></div>
+</div>
+
+<script>
+  function downloadPDF() {
+    const btn = document.querySelector('.download-btn');
+    btn.textContent = 'Generating PDF…';
+    btn.disabled = true;
+    const element = document.getElementById('resume');
+    const opt = {
+      margin: 0,
+      filename: 'Mohd_Azeem_Resume.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, logging: false },
+      jsPDF: { unit: 'px', format: [794, 1123], orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(element).save().then(() => {
+      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download PDF`;
+      btn.disabled = false;
+    });
+  }
+</script>
+</body>
+</html>

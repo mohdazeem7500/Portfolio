@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Vault</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F4F1EA;
+    --surface:#FFFFFF;
+    --ink:#201E19;
+    --ink-soft:#6E6659;
+    --line:#E3DCCB;
+    --accent:#1E7B57;
+    --accent-soft:#E1F0E6;
+    --badge-bg:#1E7B57;
+    --badge-text:#FFFFFF;
+    --danger:#A6402F;
+    --danger-soft:#F6E4E0;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{ background:var(--bg); color:var(--ink); font-family:'Source Serif 4', serif; min-height:100vh; }
+  .ui{ font-family:'IBM Plex Sans', sans-serif; }
+
+  .app{ display:flex; min-height:100vh; }
+
+  .sidebar{ width:250px; flex-shrink:0; background:var(--ink); color:#F4F1EA; padding:32px 24px; display:flex; flex-direction:column; gap:28px; font-family:'IBM Plex Sans', sans-serif; }
+  .brand{ font-family:'Fraunces', serif; font-size:1.45rem; font-weight:600; line-height:1.25; }
+  .brand span{color:var(--accent-soft); opacity:0.9;}
+  .nav{ display:flex; flex-direction:column; gap:6px; }
+  .nav button{ all:unset; cursor:pointer; padding:10px 12px; border-radius:8px; font-size:0.93rem; color:#D8D3C8; transition:background .15s ease, color .15s ease; }
+  .nav button:hover{background:rgba(255,255,255,0.08); color:#fff;}
+  .nav button.active{background:rgba(255,255,255,0.12); color:#fff; font-weight:500;}
+  .sidebar-settings{ display:flex; flex-direction:column; gap:8px; }
+  .sidebar-settings label{ font-size:0.74rem; color:#B6AF9F; }
+  .sidebar-settings input{ width:100%; padding:9px 10px; border-radius:7px; border:1px solid rgba(255,255,255,0.18); background:rgba(255,255,255,0.06); color:#fff; font-size:0.85rem; font-family:inherit; }
+  .sidebar-settings input::placeholder{color:#8A8272;}
+  .sidebar-settings .save-name{ all:unset; cursor:pointer; font-size:0.78rem; color:#8FD1B0; align-self:flex-start; }
+  .sidebar-stats{ margin-top:auto; display:flex; flex-direction:column; gap:10px; font-size:0.82rem; color:#B6AF9F; border-top:1px solid rgba(255,255,255,0.14); padding-top:18px; }
+  .stat-row{display:flex; justify-content:space-between;}
+  .stat-row b{color:#fff; font-weight:600;}
+
+  .main{ flex:1; padding:44px 52px; max-width:1180px; }
+  .topbar{ display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:30px; gap:16px; flex-wrap:wrap; }
+  .topbar h1{ font-family:'Fraunces', serif; font-weight:600; font-size:2.1rem; margin:0 0 6px 0; }
+  .topbar p{ margin:0; color:var(--ink-soft); font-size:0.98rem; max-width:54ch; font-family:'IBM Plex Sans', sans-serif; }
+  .btn{ all:unset; cursor:pointer; display:inline-flex; align-items:center; gap:8px; padding:11px 20px; border-radius:8px; font-size:0.9rem; font-weight:600; font-family:'IBM Plex Sans', sans-serif; transition:transform .1s ease, filter .15s ease; }
+  .btn:active{transform:scale(0.98);}
+  .btn-primary{background:var(--accent); color:#fff;}
+  .btn-primary:hover{filter:brightness(1.08);}
+  .btn-ghost{background:transparent; color:var(--ink); border:1px solid var(--line);}
+  .btn-ghost:hover{background:#EFEADD;}
+  .btn-danger{background:var(--danger-soft); color:var(--danger);}
+
+  .filters{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:26px; font-family:'IBM Plex Sans', sans-serif; }
+  .chip-filter{ all:unset; cursor:pointer; padding:7px 14px; border-radius:999px; font-size:0.82rem; font-weight:500; border:1px solid var(--line); background:var(--surface); color:var(--ink-soft); }
+  .chip-filter.active{ background:var(--ink); color:#fff; border-color:var(--ink); }
+
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(300px,1fr)); gap:20px; }
+  .card{ background:var(--surface); border-radius:var(--radius); border:1px solid var(--line); overflow:hidden; display:flex; flex-direction:column; cursor:pointer; transition:box-shadow .15s ease, transform .15s ease; }
+  .card:hover{ box-shadow:0 10px 26px rgba(32,30,25,0.10); transform:translateY(-2px); }
+  .card-thumb{ height:150px; background:var(--accent-soft); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  .card-thumb img{width:100%; height:100%; object-fit:cover;}
+  .card-thumb.empty{color:var(--accent); font-size:0.8rem; font-family:'IBM Plex Sans', sans-serif;}
+  .card-body{padding:18px 20px 20px;}
+  .card-body .eyebrow{ font-size:0.72rem; color:var(--accent); font-weight:600; letter-spacing:0.03em; margin-bottom:6px; font-family:'IBM Plex Sans', sans-serif; text-transform:uppercase; }
+  .card-body h3{ font-family:'Fraunces', serif; font-size:1.2rem; margin:0 0 8px 0; font-weight:600; }
+  .card-body p{ margin:0 0 14px 0; font-size:0.92rem; color:var(--ink-soft); line-height:1.55; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .tags{display:flex; gap:8px; flex-wrap:wrap;}
+  .tag{ font-family:'IBM Plex Sans', sans-serif; font-size:0.78rem; padding:5px 13px; border-radius:999px; border:1px solid var(--line); color:var(--ink); }
+
+  .empty-state{ text-align:center; padding:90px 20px; color:var(--ink-soft); font-family:'IBM Plex Sans', sans-serif; }
+  .empty-state h2{ font-family:'Fraunces', serif; color:var(--ink); font-weight:600; }
+
+  .overlay{ position:fixed; inset:0; background:rgba(32,30,25,0.42); display:none; align-items:flex-start; justify-content:center; padding:40px 20px; overflow-y:auto; z-index:50; }
+  .overlay.open{display:flex;}
+  .modal{ background:var(--surface); border-radius:14px; width:100%; max-width:640px; padding:32px; animation:pop .18s ease; font-family:'IBM Plex Sans', sans-serif; }
+  @keyframes pop{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);}}
+  .modal h2{ font-family:'Fraunces', serif; font-weight:600; margin-top:0; }
+  .field{margin-bottom:18px;}
+  .field label{ display:block; font-size:0.85rem; font-weight:600; margin-bottom:6px; color:var(--ink); }
+  .field .hint{font-weight:400; color:var(--ink-soft); font-size:0.78rem;}
+  .field input[type=text], .field textarea{ width:100%; padding:11px 13px; border-radius:8px; border:1px solid var(--line); font-family:'IBM Plex Sans', sans-serif; font-size:0.92rem; background:#FBFAF6; resize:vertical; }
+  .field textarea{min-height:90px; line-height:1.5;}
+  .checks{display:flex; gap:10px; flex-wrap:wrap;}
+  .check-pill{ display:flex; align-items:center; gap:6px; padding:8px 14px; border-radius:999px; border:1px solid var(--line); cursor:pointer; font-size:0.85rem; user-select:none; }
+  .check-pill input{accent-color:var(--accent);}
+  .check-pill.checked{background:var(--accent-soft); border-color:var(--accent);}
+  .file-drop{ border:1.5px dashed var(--line); border-radius:10px; padding:18px; text-align:center; color:var(--ink-soft); font-size:0.85rem; cursor:pointer; background:#FBFAF6; }
+  .file-drop:hover{border-color:var(--accent);}
+  .file-list{margin-top:10px; display:flex; flex-direction:column; gap:6px;}
+  .file-item{ display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:#F3EFE4; border-radius:7px; font-size:0.82rem; font-family:'IBM Plex Mono', monospace; }
+  .file-item button{ all:unset; cursor:pointer; color:var(--danger); font-family:'IBM Plex Sans', sans-serif; font-size:0.9rem; padding:2px 6px; }
+  .shot-edit-row{ display:flex; gap:10px; align-items:center; background:#F3EFE4; border-radius:8px; padding:8px; margin-bottom:8px; }
+  .shot-edit-row img{width:52px; height:52px; object-fit:cover; border-radius:6px; flex-shrink:0;}
+  .shot-edit-row input{ flex:1; padding:8px 10px; border-radius:6px; border:1px solid var(--line); font-size:0.82rem; font-family:'IBM Plex Sans', sans-serif; }
+  .shot-edit-row .rm{ all:unset; cursor:pointer; color:var(--danger); font-size:1rem; padding:4px; }
+  .modal-actions{display:flex; justify-content:flex-end; gap:10px; margin-top:26px;}
+  .error-msg{color:var(--danger); font-size:0.8rem; margin-top:6px;}
+  .toast{ position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--ink); color:#fff; padding:12px 20px; border-radius:8px; font-size:0.88rem; font-family:'IBM Plex Sans', sans-serif; z-index:100; opacity:0; pointer-events:none; transition:opacity .2s ease, transform .2s ease; }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(-4px);}
+
+  /* Full detail page — matches the reference screenshot */
+  .detail-page{ display:none; }
+  .detail-page.open{ display:block; }
+  .back-link{ all:unset; cursor:pointer; color:var(--ink-soft); font-size:0.92rem; display:inline-flex; align-items:center; gap:6px; margin-bottom:24px; font-family:'IBM Plex Sans', sans-serif; border-bottom:1px solid var(--line); padding-bottom:2px; }
+  .back-link:hover{color:var(--ink);}
+  .detail-eyebrow{ font-size:0.8rem; color:var(--accent); font-weight:700; letter-spacing:0.04em; margin-bottom:10px; font-family:'IBM Plex Sans', sans-serif; text-transform:uppercase; }
+  .detail-title{ font-family:'Fraunces', serif; font-weight:600; font-size:2.5rem; margin:0 0 16px 0; line-height:1.12; }
+  .detail-summary{ color:var(--ink-soft); font-size:1.12rem; line-height:1.65; max-width:64ch; margin:0 0 20px 0; }
+  .detail-tagrow{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:24px;}
+  .detail-hr{ border:none; border-top:1px solid var(--line); margin:28px 0; }
+  .detail-actions{ display:flex; gap:10px; margin-bottom:6px; font-family:'IBM Plex Sans', sans-serif; }
+  .detail-block h4{ font-family:'IBM Plex Sans', sans-serif; font-size:0.72rem; font-weight:700; margin:0 0 14px 0; color:var(--ink); text-transform:uppercase; letter-spacing:0.04em; }
+  .detail-desc{ white-space:pre-wrap; line-height:1.75; font-size:1.02rem; color:var(--ink); margin-bottom:16px; }
+  .findings-list{ margin:0; padding-left:22px; color:var(--ink); font-size:1.02rem; line-height:1.9; }
+  .shots-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(230px,1fr)); gap:18px; margin-top:6px; }
+  .shot-card{ cursor:zoom-in; }
+  .shot-card img{ width:100%; height:190px; object-fit:cover; border-radius:8px; border:1px solid var(--line); display:block; transition:opacity .15s ease; }
+  .shot-card:hover img{ opacity:0.88; }
+  .shot-card .cap{ font-size:0.88rem; color:var(--accent); margin-top:9px; font-family:'IBM Plex Sans', sans-serif; }
+  .lightbox{ position:fixed; inset:0; background:rgba(20,18,14,0.88); display:none; align-items:center; justify-content:center; padding:30px; z-index:80; }
+  .lightbox.open{display:flex;}
+  .lightbox img{ max-width:92vw; max-height:82vh; border-radius:6px; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+  .lightbox .lb-cap{ position:absolute; bottom:28px; left:0; right:0; text-align:center; color:#F4F1EA; font-family:'IBM Plex Sans', sans-serif; font-size:0.95rem; }
+  .lightbox .lb-close{ position:absolute; top:22px; right:28px; background:none; border:none; color:#F4F1EA; font-size:2rem; line-height:1; cursor:pointer; }
+  .lightbox .lb-nav{ position:absolute; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.12); border:none; color:#fff; font-size:1.6rem; width:46px; height:46px; border-radius:50%; cursor:pointer; }
+  .lightbox .lb-prev{left:20px;}
+  .lightbox .lb-next{right:20px;}
+  .lightbox .lb-nav:hover{background:rgba(255,255,255,0.22);}
+  .files-list{margin-top:4px;}
+  .file-row{ display:flex; align-items:center; justify-content:space-between; padding:15px 18px; background:var(--surface); border:1px solid var(--line); border-radius:9px; margin-bottom:10px; font-family:'IBM Plex Sans', sans-serif; }
+  .file-row-left{ display:flex; align-items:center; gap:13px; }
+  .file-badge{ font-family:'IBM Plex Mono', monospace; font-size:0.72rem; font-weight:700; padding:5px 11px; border-radius:6px; background:var(--badge-bg); color:var(--badge-text); }
+  .file-row-name{ font-size:0.94rem; color:var(--ink); }
+  .file-row a{ color:var(--ink-soft); text-decoration:none; font-size:0.88rem; font-weight:500; }
+  .file-row a:hover{ color:var(--accent); }
+  .detail-footer{ text-align:center; color:var(--ink-soft); font-size:0.88rem; margin-top:56px; padding-top:26px; border-top:1px solid var(--line); font-family:'IBM Plex Sans', sans-serif; }
+
+  .loading{ padding:60px; text-align:center; color:var(--ink-soft); font-family:'IBM Plex Sans', sans-serif; }
+
+  @media (max-width:760px){
+    .app{flex-direction:column;}
+    .sidebar{width:100%; flex-direction:column; align-items:stretch; padding:18px 20px; gap:16px;}
+    .sidebar-stats{display:none;}
+    .main{padding:26px 20px;}
+    .detail-title{font-size:1.8rem;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="sidebar">
+    <div class="brand">Project<br><span>Vault</span></div>
+    <div class="nav">
+      <button class="nav-btn active" data-view="all">All Projects</button>
+      <button class="nav-btn" data-view="add">+ Add New Project</button>
+    </div>
+    <div class="sidebar-settings">
+      <label>Footer name / title</label>
+      <input type="text" id="ownerName" placeholder="e.g. Your Name · Data Analyst Portfolio">
+      <button class="save-name" id="saveNameBtn">Save</button>
+    </div>
+    <div class="sidebar-stats" id="sidebarStats"></div>
+  </div>
+
+  <div class="main">
+    <div id="loadingState" class="loading">Loading...</div>
+
+    <div id="mainContent" style="display:none;">
+      <div class="topbar">
+        <div>
+          <h1>My Projects</h1>
+          <p>Store your Excel, Power BI, SQL and Python projects here with full detail, screenshots and files.</p>
+        </div>
+        <button class="btn btn-primary" id="addProjectBtn">+ New Project</button>
+      </div>
+
+      <div class="filters" id="filterBar">
+        <button class="chip-filter active" data-tag="all">All</button>
+        <button class="chip-filter" data-tag="excel">Excel</button>
+        <button class="chip-filter" data-tag="powerbi">Power BI</button>
+        <button class="chip-filter" data-tag="sql">SQL</button>
+        <button class="chip-filter" data-tag="python">Python</button>
+      </div>
+
+      <div id="gridWrap"></div>
+    </div>
+
+    <!-- Full detail page -->
+    <div class="detail-page" id="detailPage">
+      <button class="back-link" id="backLink">← Back to portfolio</button>
+      <div class="detail-eyebrow">Data Analysis Project</div>
+      <h1 class="detail-title" id="detailTitle"></h1>
+      <p class="detail-summary" id="detailSummary"></p>
+      <div class="detail-tagrow" id="detailTags"></div>
+      <div class="detail-actions">
+        <button class="btn btn-ghost" id="editBtn">Edit</button>
+        <button class="btn btn-danger" id="deleteBtn">Delete</button>
+      </div>
+      <hr class="detail-hr">
+
+      <div class="detail-block">
+        <h4>Overview</h4>
+        <div class="detail-desc" id="detailDesc"></div>
+        <ul class="findings-list" id="detailFindings"></ul>
+      </div>
+
+      <hr class="detail-hr">
+      <div class="detail-block">
+        <h4>Screenshots</h4>
+        <div class="shots-grid" id="detailShots"></div>
+      </div>
+
+      <hr class="detail-hr">
+      <div class="detail-block">
+        <h4>Files</h4>
+        <div class="files-list" id="detailFiles"></div>
+      </div>
+
+      <div class="detail-footer" id="detailFooter"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="overlay" id="formOverlay">
+  <div class="modal">
+    <h2 id="formTitle">Add New Project</h2>
+    <div class="field">
+      <label>Project name</label>
+      <input type="text" id="pName" placeholder="e.g. Sales Dashboard Analysis">
+    </div>
+    <div class="field">
+      <label>One-line summary <span class="hint">(shown on the card and at the top)</span></label>
+      <input type="text" id="pSummary" placeholder="e.g. Analysis of the Q3 drop in repeat orders and a fix">
+    </div>
+    <div class="field">
+      <label>Tools used</label>
+      <div class="checks" id="toolChecks">
+        <label class="check-pill" data-tag="excel"><input type="checkbox" value="excel"> Excel</label>
+        <label class="check-pill" data-tag="powerbi"><input type="checkbox" value="powerbi"> Power BI</label>
+        <label class="check-pill" data-tag="sql"><input type="checkbox" value="sql"> SQL</label>
+        <label class="check-pill" data-tag="python"><input type="checkbox" value="python"> Python</label>
+      </div>
+    </div>
+    <div class="field">
+      <label>Overview <span class="hint">(the business problem, the data, what you did)</span></label>
+      <textarea id="pDesc" placeholder="What problem this project solves, what data you worked with, the approach you took..."></textarea>
+    </div>
+    <div class="field">
+      <label>Key findings / actions <span class="hint">(one point per line)</span></label>
+      <textarea id="pFindings" placeholder="e.g.&#10;Identified a 23% drop in repeat orders in Q3&#10;Impact was highest in the North region&#10;Recommendation: relaunch the loyalty program"></textarea>
+    </div>
+    <div class="field">
+      <label>Screenshots <span class="hint">(add a caption for each after uploading)</span></label>
+      <div class="file-drop" id="shotDrop">Click to upload screenshots</div>
+      <input type="file" id="shotInput" accept="image/*" multiple style="display:none;">
+      <div id="shotPreview"></div>
+    </div>
+    <div class="field">
+      <label>Project files <span class="hint">(Excel, Power BI, SQL, Python, PDF — keep each file under 4MB)</span></label>
+      <div class="file-drop" id="fileDrop">Click to upload files</div>
+      <input type="file" id="fileInput" multiple style="display:none;">
+      <div class="file-list" id="fileListPreview"></div>
+      <div class="error-msg" id="fileError"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="cancelForm">Cancel</button>
+      <button class="btn btn-primary" id="saveProject">Save Project</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="lightbox" id="lightbox">
+  <button class="lb-close" id="lbClose">&times;</button>
+  <button class="lb-nav lb-prev" id="lbPrev">&#8249;</button>
+  <img id="lbImg" src="" alt="">
+  <button class="lb-nav lb-next" id="lbNext">&#8250;</button>
+  <div class="lb-cap" id="lbCap"></div>
+</div>
+
+<script>
+const TOOL_LABELS = {excel:'Excel', powerbi:'Power BI', sql:'SQL', python:'Python'};
+function getBadge(filename){
+  const ext = (filename.split('.').pop() || '').toUpperCase();
+  return ext ? ext.slice(0,4) : 'FILE';
+}
+
+let projects = [];
+let currentFilter = 'all';
+let editingId = null;
+let pendingShots = [];
+let pendingFiles = [];
+let viewingId = null;
+let ownerName = '';
+let currentShots = [];
+let lightboxIndex = 0;
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+function uid(){ return 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2,8); }
+function escapeHtml(s){ const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+function formatSize(bytes){
+  if(bytes < 1024) return bytes + ' B';
+  if(bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+  return (bytes/(1024*1024)).toFixed(2) + ' MB';
+}
+
+/* Storage layer: uses this browser's localStorage so the file works standalone,
+   outside Claude.ai, once downloaded and opened directly or hosted anywhere. */
+const store = {
+  get(key){
+    try{ const v = localStorage.getItem(key); return v === null ? null : {key, value:v}; }
+    catch(e){ console.error('storage get failed', e); return null; }
+  },
+  set(key, value){
+    try{ localStorage.setItem(key, value); return {key, value}; }
+    catch(e){ console.error('storage set failed', e); return null; }
+  },
+  delete(key){
+    try{ localStorage.removeItem(key); return {key, deleted:true}; }
+    catch(e){ console.error('storage delete failed', e); return null; }
+  },
+  listKeys(prefix){
+    try{
+      const keys = [];
+      for(let i=0;i<localStorage.length;i++){
+        const k = localStorage.key(i);
+        if(k && k.startsWith(prefix)) keys.push(k);
+      }
+      return keys;
+    }catch(e){ console.error('storage list failed', e); return []; }
+  }
+};
+
+async function loadAll(){
+  try{
+    const keys = store.listKeys('project:');
+    const items = [];
+    for(const k of keys){
+      const r = store.get(k);
+      if(r && r.value){ try{ items.push(JSON.parse(r.value)); }catch(e){} }
+    }
+    items.sort((a,b)=> (b.createdAt||0) - (a.createdAt||0));
+    projects = items;
+  }catch(e){ console.error(e); toast('Could not load your projects'); }
+
+  const r = store.get('settings:ownerName');
+  ownerName = (r && r.value) ? r.value : '';
+  document.getElementById('ownerName').value = ownerName;
+
+  document.getElementById('loadingState').style.display = 'none';
+  document.getElementById('mainContent').style.display = 'block';
+  renderStats();
+  renderGrid();
+}
+
+document.getElementById('saveNameBtn').addEventListener('click', ()=>{
+  const val = document.getElementById('ownerName').value.trim();
+  const res = store.set('settings:ownerName', val);
+  if(res){ ownerName = val; toast('Name saved'); }
+  else{ toast('Could not save name'); }
+});
+
+function renderStats(){
+  const counts = {excel:0, powerbi:0, sql:0, python:0};
+  projects.forEach(p => (p.tags||[]).forEach(t => { if(counts[t]!==undefined) counts[t]++; }));
+  document.getElementById('sidebarStats').innerHTML = `
+    <div class="stat-row"><span>Total projects</span><b>${projects.length}</b></div>
+    <div class="stat-row"><span>Excel</span><b>${counts.excel}</b></div>
+    <div class="stat-row"><span>Power BI</span><b>${counts.powerbi}</b></div>
+    <div class="stat-row"><span>SQL</span><b>${counts.sql}</b></div>
+    <div class="stat-row"><span>Python</span><b>${counts.python}</b></div>
+  `;
+}
+
+function renderGrid(){
+  const wrap = document.getElementById('gridWrap');
+  const filtered = currentFilter==='all' ? projects : projects.filter(p => (p.tags||[]).includes(currentFilter));
+  if(filtered.length === 0){
+    wrap.innerHTML = `<div class="empty-state">
+      <h2>No projects yet</h2>
+      <p>Click "+ New Project" to add your first one.</p>
+    </div>`;
+    return;
+  }
+  wrap.innerHTML = `<div class="grid">${filtered.map(cardHtml).join('')}</div>`;
+  wrap.querySelectorAll('.card').forEach(el => el.addEventListener('click', () => openDetail(el.dataset.id)));
+}
+
+function cardHtml(p){
+  const thumb = (p.screenshots && p.screenshots[0]) ? `<img src="${p.screenshots[0].dataUrl}" alt="">` : `<div class="card-thumb empty">No screenshot</div>`;
+  const tags = (p.tags||[]).map(t => `<span class="tag">${TOOL_LABELS[t]||t}</span>`).join('');
+  const summary = escapeHtml(p.summary || p.description || '');
+  return `<div class="card" data-id="${p.id}">
+    <div class="card-thumb">${thumb}</div>
+    <div class="card-body">
+      <div class="eyebrow">Data Analysis Project</div>
+      <h3>${escapeHtml(p.name)}</h3>
+      <p>${summary}</p>
+      <div class="tags">${tags}</div>
+    </div>
+  </div>`;
+}
+
+document.getElementById('filterBar').addEventListener('click', (e) => {
+  const btn = e.target.closest('.chip-filter');
+  if(!btn) return;
+  document.querySelectorAll('.chip-filter').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  currentFilter = btn.dataset.tag;
+  renderGrid();
+});
+
+document.querySelectorAll('.nav-btn').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    showGrid();
+    if(b.dataset.view === 'add') openForm();
+  });
+});
+
+function showGrid(){
+  document.getElementById('detailPage').classList.remove('open');
+  document.getElementById('mainContent').style.display = 'block';
+}
+
+/* ---------- Add/Edit Form ---------- */
+function openForm(existing){
+  editingId = existing ? existing.id : null;
+  document.getElementById('formTitle').textContent = existing ? 'Edit Project' : 'Add New Project';
+  document.getElementById('pName').value = existing ? existing.name : '';
+  document.getElementById('pSummary').value = existing ? (existing.summary||'') : '';
+  document.getElementById('pDesc').value = existing ? existing.description : '';
+  document.getElementById('pFindings').value = existing ? (existing.findings||[]).join('\n') : '';
+  document.querySelectorAll('#toolChecks input').forEach(cb=>{
+    cb.checked = existing ? (existing.tags||[]).includes(cb.value) : false;
+    cb.closest('.check-pill').classList.toggle('checked', cb.checked);
+  });
+  pendingShots = existing ? JSON.parse(JSON.stringify(existing.screenshots||[])) : [];
+  pendingFiles = existing ? JSON.parse(JSON.stringify(existing.files||[])) : [];
+  document.getElementById('fileError').textContent = '';
+  renderShotPreview();
+  renderFilePreview();
+  document.getElementById('formOverlay').classList.add('open');
+}
+function closeForm(){
+  document.getElementById('formOverlay').classList.remove('open');
+  document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
+  document.querySelector('.nav-btn[data-view="all"]').classList.add('active');
+}
+document.getElementById('addProjectBtn').addEventListener('click', ()=>openForm());
+document.getElementById('cancelForm').addEventListener('click', closeForm);
+document.querySelectorAll('#toolChecks .check-pill').forEach(pill=>{
+  pill.addEventListener('click', ()=>{ setTimeout(()=>{ const cb = pill.querySelector('input'); pill.classList.toggle('checked', cb.checked); },0); });
+});
+
+document.getElementById('shotDrop').addEventListener('click', ()=>document.getElementById('shotInput').click());
+document.getElementById('shotInput').addEventListener('change', async (e)=>{
+  const files = Array.from(e.target.files || []);
+  for(const f of files){
+    try{ const dataUrl = await resizeImage(f, 900); pendingShots.push({name:f.name, dataUrl, caption:''}); }catch(err){ console.error(err); }
+  }
+  e.target.value = '';
+  renderShotPreview();
+});
+function resizeImage(file, maxWidth){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = (ev)=>{
+      const img = new Image();
+      img.onload = ()=>{
+        let w = img.width, h = img.height;
+        if(w > maxWidth){ h = Math.round(h * (maxWidth/w)); w = maxWidth; }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.82));
+      };
+      img.onerror = reject;
+      img.src = ev.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+function renderShotPreview(){
+  const box = document.getElementById('shotPreview');
+  box.innerHTML = pendingShots.map((s,i)=>`
+    <div class="shot-edit-row">
+      <img src="${s.dataUrl}">
+      <input type="text" data-i="${i}" class="cap-input" placeholder="Caption, e.g. Dashboard overview" value="${escapeHtml(s.caption||'')}">
+      <button class="rm" data-i="${i}">×</button>
+    </div>
+  `).join('');
+  box.querySelectorAll('.cap-input').forEach(inp=>{
+    inp.addEventListener('input', ()=>{ pendingShots[parseInt(inp.dataset.i)].caption = inp.value; });
+  });
+  box.querySelectorAll('.rm').forEach(b=>{
+    b.addEventListener('click', ()=>{ pendingShots.splice(parseInt(b.dataset.i),1); renderShotPreview(); });
+  });
+}
+
+document.getElementById('fileDrop').addEventListener('click', ()=>document.getElementById('fileInput').click());
+document.getElementById('fileInput').addEventListener('change', async (e)=>{
+  const files = Array.from(e.target.files || []);
+  const errBox = document.getElementById('fileError');
+  errBox.textContent = '';
+  const MAX = 4 * 1024 * 1024;
+  for(const f of files){
+    if(f.size > MAX){ errBox.textContent = `"${f.name}" is over 4MB and was skipped. For large files, add a Google Drive link in the Overview instead.`; continue; }
+    try{ const dataUrl = await readAsDataUrl(f); pendingFiles.push({name:f.name, size:f.size, dataUrl}); }catch(err){ console.error(err); }
+  }
+  e.target.value = '';
+  renderFilePreview();
+});
+function readAsDataUrl(file){
+  return new Promise((resolve,reject)=>{
+    const reader = new FileReader();
+    reader.onload = ()=>resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+function renderFilePreview(){
+  const box = document.getElementById('fileListPreview');
+  box.innerHTML = pendingFiles.map((f,i)=>`
+    <div class="file-item"><span>${escapeHtml(f.name)} — ${formatSize(f.size)}</span><button data-i="${i}">Remove</button></div>
+  `).join('');
+  box.querySelectorAll('button').forEach(b=>{
+    b.addEventListener('click', ()=>{ pendingFiles.splice(parseInt(b.dataset.i),1); renderFilePreview(); });
+  });
+}
+
+document.getElementById('saveProject').addEventListener('click', async ()=>{
+  const name = document.getElementById('pName').value.trim();
+  if(!name){ toast('Please enter a project name'); return; }
+  const tags = Array.from(document.querySelectorAll('#toolChecks input:checked')).map(cb=>cb.value);
+  const summary = document.getElementById('pSummary').value.trim();
+  const description = document.getElementById('pDesc').value.trim();
+  const findings = document.getElementById('pFindings').value.split('\n').map(s=>s.trim()).filter(Boolean);
+
+  const id = editingId || uid();
+  const record = {
+    id, name, tags, summary, description, findings,
+    screenshots: pendingShots,
+    files: pendingFiles,
+    createdAt: editingId ? (projects.find(p=>p.id===id)?.createdAt || Date.now()) : Date.now(),
+    updatedAt: Date.now()
+  };
+
+  const saveBtn = document.getElementById('saveProject');
+  saveBtn.textContent = 'Saving...';
+  try{
+    const payload = JSON.stringify(record);
+    if(payload.length > 4.5 * 1024 * 1024){
+      toast('This project is too large for browser storage — remove a screenshot or file');
+      saveBtn.textContent = 'Save Project';
+      return;
+    }
+    const res = store.set('project:' + id, payload);
+    if(!res){ throw new Error('save failed'); }
+    toast(editingId ? 'Project updated' : 'Project saved');
+    closeForm();
+    await loadAll();
+  }catch(e){
+    console.error(e);
+    if(e && e.name === 'QuotaExceededError'){
+      toast('Browser storage is full — remove a screenshot/file or delete an old project');
+    } else {
+      toast('Could not save — please try again');
+    }
+  }
+  saveBtn.textContent = 'Save Project';
+});
+
+/* ---------- Full detail page ---------- */
+function openDetail(id){
+  const p = projects.find(x=>x.id===id);
+  if(!p) return;
+  viewingId = id;
+
+  document.getElementById('detailTitle').textContent = p.name;
+  document.getElementById('detailSummary').textContent = p.summary || '';
+  document.getElementById('detailSummary').style.display = p.summary ? 'block' : 'none';
+  document.getElementById('detailTags').innerHTML = (p.tags||[]).map(t=>`<span class="tag">${TOOL_LABELS[t]||t}</span>`).join('');
+
+  document.getElementById('detailDesc').textContent = p.description || 'No overview added yet.';
+  const findingsEl = document.getElementById('detailFindings');
+  findingsEl.innerHTML = (p.findings||[]).map(f=>`<li>${escapeHtml(f)}</li>`).join('');
+  findingsEl.style.display = (p.findings||[]).length ? 'block' : 'none';
+
+  const shotsEl = document.getElementById('detailShots');
+  if((p.screenshots||[]).length === 0){
+    shotsEl.innerHTML = '<div style="color:var(--ink-soft); font-size:0.92rem; font-family:\'IBM Plex Sans\',sans-serif;">No screenshots uploaded</div>';
+  }else{
+    shotsEl.innerHTML = p.screenshots.map((s,i)=>`
+      <div class="shot-card" data-i="${i}"><img src="${s.dataUrl}" alt="${escapeHtml(s.caption||s.name)}">${s.caption ? `<div class="cap">${escapeHtml(s.caption)}</div>` : ''}</div>
+    `).join('');
+    currentShots = p.screenshots;
+    shotsEl.querySelectorAll('.shot-card').forEach(el=>{
+      el.addEventListener('click', ()=> openLightbox(parseInt(el.dataset.i)));
+    });
+  }
+
+  const filesEl = document.getElementById('detailFiles');
+  if((p.files||[]).length === 0){
+    filesEl.innerHTML = '<div style="color:var(--ink-soft); font-size:0.92rem; font-family:\'IBM Plex Sans\',sans-serif;">No files attached</div>';
+  }else{
+    filesEl.innerHTML = p.files.map(f=>{
+      const b = getBadge(f.name);
+      return `<div class="file-row">
+        <div class="file-row-left">
+          <span class="file-badge">${b}</span>
+          <span class="file-row-name">${escapeHtml(f.name)}</span>
+        </div>
+        <a href="${f.dataUrl}" download="${escapeHtml(f.name)}">Download ↓</a>
+      </div>`;
+    }).join('');
+  }
+
+  document.getElementById('detailFooter').textContent = ownerName || '';
+  document.getElementById('detailFooter').style.display = ownerName ? 'block' : 'none';
+
+  document.getElementById('mainContent').style.display = 'none';
+  document.getElementById('detailPage').classList.add('open');
+  window.scrollTo(0,0);
+}
+
+document.getElementById('backLink').addEventListener('click', showGrid);
+document.getElementById('editBtn').addEventListener('click', ()=>{
+  const p = projects.find(x=>x.id===viewingId);
+  if(p) openForm(p);
+});
+document.getElementById('deleteBtn').addEventListener('click', async ()=>{
+  if(!viewingId) return;
+  if(!confirm('Delete this project? This cannot be undone.')) return;
+  const res = store.delete('project:' + viewingId);
+  if(res){
+    toast('Project deleted');
+    viewingId = null;
+    showGrid();
+    await loadAll();
+  } else {
+    toast('Could not delete project');
+  }
+});
+
+document.getElementById('formOverlay').addEventListener('click', (e)=>{ if(e.target.id==='formOverlay'){ e.target.classList.remove('open'); } });
+
+/* ---------- Lightbox ---------- */
+function openLightbox(i){
+  if(!currentShots.length) return;
+  lightboxIndex = i;
+  renderLightbox();
+  document.getElementById('lightbox').classList.add('open');
+}
+function renderLightbox(){
+  const s = currentShots[lightboxIndex];
+  document.getElementById('lbImg').src = s.dataUrl;
+  document.getElementById('lbImg').alt = s.caption || s.name || '';
+  document.getElementById('lbCap').textContent = s.caption || '';
+  const multi = currentShots.length > 1;
+  document.getElementById('lbPrev').style.display = multi ? 'block' : 'none';
+  document.getElementById('lbNext').style.display = multi ? 'block' : 'none';
+}
+function closeLightbox(){ document.getElementById('lightbox').classList.remove('open'); }
+document.getElementById('lbClose').addEventListener('click', closeLightbox);
+document.getElementById('lightbox').addEventListener('click', (e)=>{ if(e.target.id==='lightbox'){ closeLightbox(); } });
+document.getElementById('lbPrev').addEventListener('click', ()=>{ lightboxIndex = (lightboxIndex - 1 + currentShots.length) % currentShots.length; renderLightbox(); });
+document.getElementById('lbNext').addEventListener('click', ()=>{ lightboxIndex = (lightboxIndex + 1) % currentShots.length; renderLightbox(); });
+document.addEventListener('keydown', (e)=>{
+  if(!document.getElementById('lightbox').classList.contains('open')) return;
+  if(e.key === 'Escape') closeLightbox();
+  if(e.key === 'ArrowLeft') document.getElementById('lbPrev').click();
+  if(e.key === 'ArrowRight') document.getElementById('lbNext').click();
+});
+
+loadAll();
+</script>
+</body>
+</html>

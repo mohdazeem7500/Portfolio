@@ -726,4 +726,40 @@
       <!-- Declaration -->
       <div class="r-section">
         <div class="r-title">Declaration</div>
-        <p class="declaration
+        <p class="declaration-sign">Mohd Azeem</div>
+      </div>
+ 
+    </div><!-- /right -->
+ 
+  </div><!-- /body -->
+ 
+  <div class="footer-bar"></div>
+ 
+</div><!-- /page -->
+ 
+<div class="btn-wrap">
+  <a class="download-btn" href="https://mohdazeem7500.github.io/portfolios/" target="_blank" rel="noopener" onclick="window.open('https://mohdazeem7500.github.io/portfolios/', '_blank'); return false;">
+    <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 2a8 8 0 0 1 8 8c0 1.9-.66 3.65-1.76 5.03C16.8 15.24 14.6 14 12 14s-4.8 1.24-6.24 3.03A7.96 7.96 0 0 1 4 12a8 8 0 0 1 8-8zm0 1.5A3.5 3.5 0 1 0 12 12a3.5 3.5 0 0 0 0-6.5z"/></svg>
+    View Portfolio
+  </a>
+  <button class="download-btn" id="downloadBtn" style="margin-left:16px;">
+    <svg viewBox="0 0 24 24"><path d="M5 20h14v-2H5v2zM12 2v12.17l-3.59-3.58L7 12l5 5 5-5-1.41-1.41L12 14.17V2h-2z"/></svg>
+    Download PDF
+  </button>
+</div>
+ 
+<script>
+  document.getElementById('downloadBtn').addEventListener('click', async function () {
+    const page = document.querySelector('.page');
+    const canvas = await html2canvas(page, { scale: 2, useCORS: true });
+    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+    pdf.save('Mohd_Azeem_Resume.pdf');
+  });
+</script>
+ 
+</body>
+</html>
+ 
